@@ -117,7 +117,7 @@ function initModules(callback) {
 	firetext.recents.init();
 	
 	// Initialize IO
-	firetext.io.init(null, function(){
+	firetext.io.init(function(){
 		initFileBrowser(function(){
 			callback();
 		});
@@ -603,8 +603,10 @@ function buildEditDocList(DOCS, listElm, display, location) {
 /* IO
 ------------------------*/
 firetext.io = {
-	init: function () {
-		// TBD
+	init: function (callback) {
+		app.modules.load('modules/io/index.html', document.getElementById('io'), function() {
+			callback();
+		});
 	}
 };
 
@@ -676,7 +678,7 @@ function initEditor(callback) {
 			Window.postMessage(editor.contentWindow, {command: "init"}, "*", [editorMessageChannel.port2]);
 			editorMessageProxy.getPort().start();
 		}
-	}, true);
+	});
 }
 
 function watchDocument(filetype) {
