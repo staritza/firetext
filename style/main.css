@@ -40,6 +40,10 @@ html, body {
   margin: 1rem;
 }
 
+.invisible {
+  display: none;
+}
+
 
 /* Fonts */
 @font-face {
