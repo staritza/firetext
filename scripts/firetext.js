@@ -108,7 +108,7 @@ firetext.init = function () {
 	regions.nav('welcome');
 	
 	// Initialize the editor
-	initEditor(function() {		
+	initEditor(function() {
 		// Init extIcon
 		extIcon();
 	
@@ -142,8 +142,7 @@ firetext.init = function () {
 		);
 	
 		// Initialize IO
-		firetext.io.init(null, function() {
-	
+		firetext.io.init(null, function() {	
 			// Update Doc Lists
 			updateDocLists();
 			
@@ -234,10 +233,16 @@ function updateAddDialog() {
 /* Bugsense
 ------------------------*/
 function bugsenseInit() {
-	if (firetext.settings.get('stats.enabled') != 'false') {
-		bugsense = new Bugsense({ appversion: version, apiKey: bugsenseKey });
+	if (bugsenseKey) {
+		if (firetext.settings.get('stats.enabled') != 'false') {
+			bugsense = new Bugsense({ appversion: version, apiKey: bugsenseKey });
+		} else {
+			bugsense = null;
+		}	
 	} else {
-		bugsense = null;
+		if (firetext.settings.get('stats.enabled') != 'false') {
+			firetext.settings.save('stats.enabled','false');
+		}
 	}
 }
 
@@ -622,9 +627,8 @@ function extIcon() {
 /* Editor
 ------------------------*/ 
 function initEditor(callback) {
-	loadEditor(function(editorURL) {
+	app.modules.load('modules/editor/editor.html', editor, function() {
 		editor.onload = null;
-		editor.src = editorURL;
 		editor.onload = function() {
 			var editorMessageChannel = new MessageChannel();
 			// See: scripts/messages.js
@@ -661,7 +665,7 @@ function initEditor(callback) {
 			Window.postMessage(editor.contentWindow, {command: "init"}, "*", [editorMessageChannel.port2]);
 			editorMessageProxy.getPort().start();
 		}
-	})
+	}, true);
 }
 
 function watchDocument(filetype) {
@@ -690,7 +694,7 @@ function forceAutosave() {
 
 function autosave(force) {
 	if (firetext.settings.get('autosave') != 'false') {
-		if (!saveTimeout | force == true) {
+		if (!saveTimeout || force == true) {
 			if (saving != true) {
 				// Add timeout for saving
 				saveTimeout = window.setTimeout(saveFromEditor, 1000);
@@ -1292,3 +1296,7 @@ function editFullScreen(enter) {
 		editor.classList.remove('fullscreen');
 	}
 }
+
+firetext.alert = function(message) {
+	alert(message);
+};
