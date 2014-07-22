@@ -21,6 +21,9 @@ html, body {
     height: -moz-calc(100% - 5rem);
     height: -webkit-calc(100% - 5rem);
   overflow: scroll;
+  width: 100%;
+  border: none;
+  outline: none;
 }
 
 .firetext {

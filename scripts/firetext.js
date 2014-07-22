@@ -40,115 +40,20 @@ var appCache = window.applicationCache;
 ------------------------*/
 window.addEventListener('DOMContentLoaded', function() {firetext.init()}, false);
 
-firetext.init = function () {
-	// Initialize Bugsense
-	bugsenseInit();
-	
-	// Initialize l10n
+firetext.init = function () {	
+	// l10n catch
 	navigator.mozL10n.once(function () {
-  
-	// Initialize urls
-	getURLs(function(){
-
-	});
-		
-	// Initialize Settings
-	firetext.settings.init();
+		// Select elements
+		initElements();
 	
-	// Initialize language handler
-	firetext.language(firetext.settings.get('language'));
-	
-	// Find device type
-	checkDevice();
-	
-	// Initialize gestures
-	initGestures();
-
-	/* Select important elements for later */
-	// Misc
-	loadSpinner = document.getElementById('loadSpinner');
-	spinner();
-	tabDesign = document.getElementById('tab-design');
-	tabRaw = document.getElementById('tab-raw');
-	editor = document.getElementById('editor');
-	rawEditor = document.getElementById('rawEditor');
-	toolbar = document.getElementById('edit-zone');
-	editWindow = document.getElementById('edit');
-	locationLegend = document.getElementById('locationLegend');
-	locationSelect = document.getElementById('createDialogFileLocation');
-	
-	// Lists
-	welcomeDocsList = document.getElementById('welcome-docs-list');
-	welcomeDeviceArea = document.getElementById('welcome-device-area');
-	welcomeDeviceList = document.getElementById('welcome-device-list');
-	openDialogDeviceArea = document.getElementById('open-dialog-device-area');
-	openDialogDeviceList = document.getElementById('open-dialog-device-list');
-	welcomeRecentsArea = document.getElementById('welcome-recents-area');
-	welcomeRecentsList = document.getElementById('welcome-recents-list');
-	welcomeDropboxArea = document.getElementById('welcome-dropbox-area');
-	welcomeDropboxList = document.getElementById('welcome-dropbox-list');
-	openDialogDropboxArea = document.getElementById('open-dialog-dropbox-area');
-	openDialogDropboxList = document.getElementById('open-dialog-dropbox-list');
-	
-	// Formatting
-	bold = document.getElementById('bold');
-	boldCheckbox = document.getElementById('boldCheckbox');
-	italic = document.getElementById('italic');
-	italicCheckbox = document.getElementById('italicCheckbox');
-	justifySelect = document.getElementById('justify-select');
-	strikethrough = document.getElementById('strikethrough');
-	strikethroughCheckbox = document.getElementById('strikethroughCheckbox');
-	underline = document.getElementById('underline');
-	underlineCheckbox = document.getElementById('underlineCheckbox');
-	
-	// Initalize recent docs
-	firetext.recents.init();
-	
-	// Navigate to welcome
-	regions.nav('welcome');
-	
-	// Initialize the editor
-	initEditor(function() {
-		// Init extIcon
-		extIcon();
-	
-		// Initiate user id
-		firetext.user.id.init();
-		
-		// Add event listeners
-		toolbar.addEventListener(
-			'mousedown', function mouseDown(event) {
-				event.preventDefault();
-				event.target.classList.toggle('active');
-			}
-		);
-		toolbar.addEventListener(
-			'mouseup', function mouseDown(event) {
-				if (event.target.classList.contains('sticky') != true) {
-					event.target.classList.remove('active');
-				}
-			}
-		);
-		editWindow.addEventListener(
-			'mouseenter', function mouseDown(event) {
-				editor.focus();
-			}
-		);
-	
-		welcomeDocsList.addEventListener(
-			'contextmenu', function contextmenu(event) {
-				editDocs();
-			}
-		);
-	
-		// Initialize IO
-		firetext.io.init(null, function() {	
+		// Load modules
+		initModules(function() {		
 			// Update Doc Lists
 			updateDocLists();
-			
-			// Initialize sharing
-			cloud.init();
-			
+	
+			// Navigate to welcome
+			regions.nav('welcome');
+		
 			// Check for recent file, and if found, load it.
 			if (firetext.settings.get('autoload') == 'true') {
 				var lastDoc = [firetext.settings.get('autoload.dir'), firetext.settings.get('autoload.name'), firetext.settings.get('autoload.ext'), firetext.settings.get('autoload.loc')];
@@ -173,17 +78,123 @@ firetext.init = function () {
 			} else {
 				spinner('hide');
 			}
-	
+		
+			// Create listeners
+			initListeners();
+
 			// Dispatch init event
 			window.dispatchEvent(firetext.initialized);
 			firetext.isInitialized = true;
-		});
-	});
-	
+		});	
 	});
 };
 
-function getURLs(callback) {
+function initModules(callback) {
+	// Initialize Bugsense
+	bugsenseInit();
+	
+	// Initialize urls
+	initURLs(function(){});
+	
+	// Find device type
+	checkDevice();
+		
+	// Initialize Settings
+	firetext.settings.init();
+	
+	// Initialize Language
+	firetext.language(firetext.settings.get('language'));
+	
+	// Initialize Gestures
+	initGestures();
+	
+	// Initialize extIcon
+	extIcon();
+
+	// Initiate UID
+	firetext.user.id.init();	
+			
+	// Initialize sharing
+	cloud.init();
+	
+	// Initalize recent docs
+	firetext.recents.init();
+	
+	// Initialize IO
+	firetext.io.init(null, function() {
+		// Initialize editor
+		initEditor(function() {	
+			callback();
+		});	
+	});
+}
+
+function initElements() {
+	// Misc
+	loadSpinner = document.getElementById('loadSpinner');
+	spinner();
+	tabDesign = document.getElementById('tab-design');
+	tabRaw = document.getElementById('tab-raw');
+	editor = document.getElementById('editor');
+	rawEditor = document.getElementById('rawEditor');
+	toolbar = document.getElementById('edit-zone');
+	editWindow = document.getElementById('edit');
+	locationLegend = document.getElementById('locationLegend');
+	locationSelect = document.getElementById('createDialogFileLocation');	
+	
+	// Lists
+	welcomeDocsList = document.getElementById('welcome-docs-list');
+	welcomeDeviceArea = document.getElementById('welcome-device-area');
+	welcomeDeviceList = document.getElementById('welcome-device-list');
+	openDialogDeviceArea = document.getElementById('open-dialog-device-area');
+	openDialogDeviceList = document.getElementById('open-dialog-device-list');
+	welcomeRecentsArea = document.getElementById('welcome-recents-area');
+	welcomeRecentsList = document.getElementById('welcome-recents-list');
+	welcomeDropboxArea = document.getElementById('welcome-dropbox-area');
+	welcomeDropboxList = document.getElementById('welcome-dropbox-list');
+	openDialogDropboxArea = document.getElementById('open-dialog-dropbox-area');
+	openDialogDropboxList = document.getElementById('open-dialog-dropbox-list');
+
+	// Formatting
+	bold = document.getElementById('bold');
+	boldCheckbox = document.getElementById('boldCheckbox');
+	italic = document.getElementById('italic');
+	italicCheckbox = document.getElementById('italicCheckbox');
+	justifySelect = document.getElementById('justify-select');
+	strikethrough = document.getElementById('strikethrough');
+	strikethroughCheckbox = document.getElementById('strikethroughCheckbox');
+	underline = document.getElementById('underline');
+	underlineCheckbox = document.getElementById('underlineCheckbox');
+}
+
+function initListeners() {	
+	// Add event listeners
+	toolbar.addEventListener(
+		'mousedown', function mouseDown(event) {
+			event.preventDefault();
+			event.target.classList.toggle('active');
+		}
+	);
+	toolbar.addEventListener(
+		'mouseup', function mouseDown(event) {
+			if (event.target.classList.contains('sticky') != true) {
+				event.target.classList.remove('active');
+			}
+		}
+	);
+	editWindow.addEventListener(
+		'mouseenter', function mouseDown(event) {
+			editor.focus();
+		}
+	);	
+	welcomeDocsList.addEventListener(
+		'contextmenu', function contextmenu(event) {
+			editDocs();
+		}
+	);
+}
+
+function initURLs(callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.open('post','http://firetext.codexa.bugs3.com/',true);
 	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
