@@ -36,8 +36,6 @@ cloud.init = function () {
 					updateDocLists();
 					
 					// Show UI elements
-					welcomeDropboxArea.style.display = 'block';
-					openDialogDropboxArea.style.display = 'block';
 					locationDropbox = document.createElement('option');
 					locationDropbox.textContent = 'Dropbox';
 					locationDropbox.value = 'dropbox';
@@ -50,8 +48,6 @@ cloud.init = function () {
 					setTimeout(updateAddDialog, 1);
 				} else {
 					// Hide/Remove UI elements
-					welcomeDropboxArea.style.display = 'none';
-					openDialogDropboxArea.style.display = 'none';
 					if (locationDropbox) {
 						locationSelect.removeChild(locationDropbox);
 						locationDropbox = undefined;
@@ -61,8 +57,6 @@ cloud.init = function () {
 		} 
 	} else {
 		// Hide/Remove UI elements
-		welcomeDropboxArea.style.display = 'none';
-		openDialogDropboxArea.style.display = 'none';
 		if (locationDropbox) {
 			locationSelect.removeChild(locationDropbox);
 			locationDropbox = undefined;
@@ -88,37 +82,6 @@ cloud.init = function () {
 			}
 		}	 
 	}
-	
-	/* 0.4
-	// Google Drive
-	if (firetext.settings.get('gdrive.enabled') == 'true') {
-		// Code to get Google Drive files
-		updateDocLists();
-		
-		// Show UI Elements
-		welcomeGoogleArea.style.display = 'block';
-		openDialogGoogleArea.style.display = 'block';
-		locationGoogle = document.createElement('option');
-		locationGoogle.textContent = 'Google Drive';
-		locationSelect.appendChild(locationGoogle);
-	} else {
-		// Hide/Remove UI elements
-		welcomeGoogleArea.style.display = 'none';
-		openDialogGoogleArea.style.display = 'none';
-		if (locationGoogle) {
-			locationSelect.removeChild(locationGoogle);
-			locationGoogle = undefined;
-		}
-		
-		// Remove Google recents
-		var driveRecents = firetext.recents.get();
-		for (var i = 0; i < driveRecents.length; i++) {
-			if (driveRecents[i][4] == 'gdrive') {
-				firetext.recents.remove([driveRecents[i][0], driveRecents[i][1], driveRecents[i][2]], driveRecents[i][3], driveRecents[i][4]);
-			}
-		}
-	}
-	*/
 	
 	updateAddDialog();
 };
