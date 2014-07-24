@@ -70,9 +70,9 @@ if (!app) {
 		request.send();
 	}
 	
-	function fillFrame(blobURL, destinations, callback) {
+	function fillFrame(url, destinations, callback) {
 		// Validate params
-		if (!blobURL || !destinations) {
+		if (!url || !destinations) {
 			callback('bad-params');
 		}
 		
@@ -82,7 +82,7 @@ if (!app) {
 		
 		// Fill frames
 		destinations.forEach(function(t){
-			t.src = blobURL;
+			t.src = url;
 		});
 		
 		// Done!
@@ -96,22 +96,43 @@ if (!app) {
 	}
 	
 	app.modules = {
-    	load: function (url, destinations, callback) {
+		fill: function (url, destinations, callback) {
+			fillFrame(url, destinations, function(e){
+				if (e) {
+					console.log(e);
+				} else {
+					callback();
+				}
+			});
+		},
+    	load: function (url, destinations, callback, store) {
     		console.log('Loading '+url);
-    		loadModule(url, function(e,b){
-    			if (e) {
-    				console.log(e);
-    			} else {
-					fillFrame(b, destinations, function(e){
-						if (e) {
-							console.log(e);
-						} else {
-							console.log('Finished loading '+url);
-							callback();
-						}
-					});
-    			}
-    		});
+    		
+    		if (store) {
+				loadModule(url, function(e,b){
+					if (e) {
+						console.log(e);
+					} else {
+						fillFrame(b, destinations, function(e){
+							if (e) {
+								console.log(e);
+							} else {
+								console.log('Finished loading '+url);
+								callback(b);
+							}
+						});
+					}
+				});
+    		} else {
+				fillFrame(url, destinations, function(e){
+					if (e) {
+						console.log(e);
+					} else {
+						console.log('Finished loading '+url);
+						callback();
+					}
+				});
+    		}
     	}
     };
 })(this);
